@@ -7,26 +7,30 @@ from Util import cards_to_string
 
 class TreeVisualizer:
     def __init__(self):
-        pass
+        self.node_to_graphviz_counter = 0 
 
     def node_to_graphviz(self, node):
         out = {}
+        out['name'] = f"node {self.node_to_graphviz_counter}"
         out["label"] = f"<f0>{node.current_player}"
 
-        if node["terminal"]:
-            if node["type"] == Constants.node_types["terminal_fold"]:
+        if node.terminal:
+            if node.type == Constants.node_types["terminal_fold"]:
                 out["label"] += "| TERMINAL FOLD"
-            elif node["type"] == Constants.node_types["terminal_call"]:
+            elif node.type == Constants.node_types["terminal_call"]:
                 out["label"] += "| TERMINAL CALL"
             else:
                 raise ValueError("unknown terminal node type")
         else:
-            out["label"] += f"| bet1: {node['bets'][0]} | bet2: {node['bets'][1]}"
+            out["label"] += f"| bet1: {node.bets[0]} | bet2: {node.bets[1]}"
 
-        if node["street"]:
+        if node.street:
             out[
                 "label"
-            ] += f"| street: {node['street']} | board: {cards_to_string(node['board'])} | depth: {node['depth']}"
+            ] += f"| street: {node.street} | board: {cards_to_string(node.board)} | depth: {node.depth}"
+        
+        out['shape'] = 'record'
+        self.node_to_graphviz_counter += 1 
 
         return out
 
@@ -46,12 +50,14 @@ class TreeVisualizer:
         self.graphviz_dfs(root, nodes, edges)
 
         for node in nodes:
-            node_text = f"{node.name}[label={node.label} shape={node.shape}];"
+            node_text = f"\"{node['name']}\"[label=\"{node['label']}\" shape=\"{node['shape']}\"];"
             out += node_text
 
         for edge in edges:
             edge_text = f'{edge.id_from}:f0 -> {edge.id_to}:f0 [id = {edge.id} label = "{edge.strategy}"];'
             out += edge_text
+
+        out += "}"
 
         # write into dot file
         file_path = os.path.join(data_directory, "Dot", filename)
