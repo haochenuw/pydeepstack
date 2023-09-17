@@ -1,14 +1,19 @@
 from enum import Enum, auto
 
 
-class Players(Enum):
-    Nobody = auto()
-    P1 = auto()
-    P2 = auto()
-    Chance = auto()
-
-
 class Constants:
+    params = {
+        "max_street": 2, 
+        "stack":4, 
+    }
+
+    players = {
+        "Chance": 0, 
+        "P1": 1, 
+        "P2":  2, 
+        "Nobody": -1,
+    }
+
     node_types = {
         "terminal_fold": -2,
         "terminal_call": -1,
