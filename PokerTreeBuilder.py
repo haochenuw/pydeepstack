@@ -49,13 +49,21 @@ class PokerTreeBuilder():
     
     def _get_children_of_chance_node(self, current_node):
         # todo 
-        return [] 
+        nodes = []
+        for board in Constants.board_choices: 
+            newBoard = current_node.board + board
+            nodes.append(TreeNode(current_node.street, current_node.bets, Constants.players["P1"], newBoard)) 
+        return nodes 
 
     def _get_children_of_player_node(self, current_node: TreeNode): 
         children = []
 
         if current_node.terminal: 
             return [] 
+        
+        elif current_node.isCall: 
+            chanceNode = TreeNode(current_node.street + 1, current_node.bets, Constants.players["Chance"], current_node.board)
+            return [chanceNode]
         
         foldNode = TreeNode(current_node.street, current_node.bets, Constants.players["Nobody"], current_node.board)
         foldNode.terminal = True
@@ -77,7 +85,7 @@ class PokerTreeBuilder():
                     children.append(betNode)
 
         if self._possibleCall(current_node): 
-            callNode = TreeNode(current_node.street, Util.fill_bets(current_node.bets), Constants.players["Nobody"], current_node.board)
+            callNode = TreeNode(current_node.street, Util.fill_bets(current_node.bets), Constants.players["Nobody"], current_node.board, True)
             if current_node.street == Constants.params["max_street"]:
                 callNode.terminal = True
             children.append(callNode)

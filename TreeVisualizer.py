@@ -16,19 +16,16 @@ class TreeVisualizer:
         out["label"] = f"<f0>{node.current_player}"
 
         if node.terminal:
-            if node.type == Constants.node_types["terminal_fold"]:
-                out["label"] += "| TERMINAL FOLD"
-            elif node.type == Constants.node_types["terminal_call"]:
+            if node.isCall:
                 out["label"] += "| TERMINAL CALL"
-            else:
-                raise ValueError("unknown terminal node type")
-        else:
-            out["label"] += f"| bet1: {node.bets[0]} | bet2: {node.bets[1]}"
+            else: 
+                out["label"] += "| TERMINAL FOLD"
+        out["label"] += f"| bet1: {node.bets[0]} | bet2: {node.bets[1]}"
 
         if node.street:
             out[
                 "label"
-            ] += f"| street: {node.street} | board: {cards_to_string(node.board)} | depth: {node.depth}"
+            ] += f"| street: {node.street} | board: {node.board} | depth: {node.depth}"
         
         out['shape'] = 'record'
         self.node_to_graphviz_counter += 1 
@@ -38,6 +35,9 @@ class TreeVisualizer:
     def graphviz_dfs(self, root, nodes, edges):
         gv_node = self.node_to_graphviz(root)
         nodes.append(gv_node)
+        for child in root.children: 
+            self.graphviz_dfs(child, nodes, edges)
+        return 
 
     def graphviz(self, root, filename):
         data_directory = "./"

@@ -10,4 +10,4 @@ pokerTreeBuilder.build_tree(root)
 
 visualizer = TreeVisualizer()
 
-visualizer.graphviz(root, "simple_tree")
+visualizer.graphviz(root, "tree")

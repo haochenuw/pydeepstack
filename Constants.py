@@ -7,6 +7,10 @@ class Constants:
         "stack":4, 
     }
 
+    # board_choices = ["As", "Ah", "Ks", "Kh", "Qs", "Qh"]
+
+    board_choices = ["A", "K", "Q"]
+
     players = {
         "Chance": 0, 
         "P1": 1, 
