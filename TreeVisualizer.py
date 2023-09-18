@@ -9,6 +9,7 @@ from Util import cards_to_string
 class TreeVisualizer:
     def __init__(self):
         self.node_to_graphviz_counter = 0 
+        self.edge_to_graphviz_counter = 0 
 
     def node_to_graphviz(self, node):
         out = {}
@@ -18,8 +19,11 @@ class TreeVisualizer:
         if node.terminal:
             if node.isCall:
                 out["label"] += "| TERMINAL CALL"
-            else: 
+            elif node.isFold: 
                 out["label"] += "| TERMINAL FOLD"
+            else: 
+                out["label"] += "| TERMINAL CHECK"
+
         out["label"] += f"| bet1: {node.bets[0]} | bet2: {node.bets[1]}"
 
         if node.street:
@@ -35,9 +39,25 @@ class TreeVisualizer:
     def graphviz_dfs(self, root, nodes, edges):
         gv_node = self.node_to_graphviz(root)
         nodes.append(gv_node)
-        for child in root.children: 
-            self.graphviz_dfs(child, nodes, edges)
-        return 
+
+        for i in range(len(root.children)):
+            child = root.children[i]
+            gv_child = self.graphviz_dfs(child, nodes, edges)
+            edge = self.compute_gv_edge(gv_node["name"], gv_child["name"], i)
+            edges.append(edge)
+        return gv_node
+    
+    def compute_gv_edge(self, node_name, child_name, child_index): 
+        out = {}
+        
+        out["id_from"] = node_name
+        out["id_to"] = child_name
+        out["id"] = self.edge_to_graphviz_counter
+        
+        # out["strategy"] = self.add_tensor(node["strategy"][child_id], None, "%.2f", card_to_string.card_to_string_table)
+        
+        self.edge_to_graphviz_counter = self.edge_to_graphviz_counter + 1
+        return out
 
     def graphviz(self, root, filename):
         data_directory = "./"
@@ -52,11 +72,11 @@ class TreeVisualizer:
 
         for node in nodes:
             node_text = f"\"{node['name']}\"[label=\"{node['label']}\" shape=\"{node['shape']}\"];"
-            out += node_text
+            out += node_text + "\n"; 
 
         for edge in edges:
-            edge_text = f'{edge.id_from}:f0 -> {edge.id_to}:f0 [id = {edge.id} label = "{edge.strategy}"];'
-            out += edge_text
+            edge_text = f'\"{edge["id_from"]}\":f0 -> \"{edge["id_to"]}\":f0 [id = {edge["id"]} label = "strategy placeholder"];'
+            out += edge_text + "\n"; 
 
         out += "}"
 

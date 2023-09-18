@@ -2,7 +2,7 @@ from PokerTreeBuilder import PokerTreeBuilder
 from TreeNode import TreeNode
 from TreeVisualizer import TreeVisualizer
 
-root = TreeNode(1, (1, 2), 1, "")
+root = TreeNode(2, (2, 2), 1, "K")
 
 pokerTreeBuilder = PokerTreeBuilder()
 

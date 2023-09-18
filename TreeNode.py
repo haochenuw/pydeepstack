@@ -13,6 +13,7 @@ class TreeNode:
         self.depth = depth
         self.isCall = isCall
         self.children = None
+        self.isFold = False 
 
     # Method to display information about the person
     def display_info(self):

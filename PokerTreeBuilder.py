@@ -20,11 +20,13 @@ class PokerTreeBuilder():
         print(f'found {len(children)} children nodes')
         current_node.children = children
         depth = 0
+        actions = [] 
         for i in range(len(children)): 
-            children[i].parent = current_node
-            # current_node.actions[i] = "TBD" 
+            # children[i].parent = current_node
+            actions.append("default_action")
             self._build_tree_dfs(children[i]) 
             depth = max(depth, children[i].depth)
+        current_node.actions = actions 
         current_node.depth = depth + 1
         
     def _get_children_nodes(self, current_node: TreeNode): 
@@ -67,12 +69,14 @@ class PokerTreeBuilder():
         
         foldNode = TreeNode(current_node.street, current_node.bets, Constants.players["Nobody"], current_node.board)
         foldNode.terminal = True
+        foldNode.isFold = True 
         children.append(foldNode)
 
         if self._possibleCheck(current_node): 
             checkNode = TreeNode(current_node.street, current_node.bets, 3 - current_node.current_player, current_node.board)
-            if current_node.street == Constants.params["max_street"]:
+            if current_node.street == Constants.params["max_street"] and current_node.current_player == Constants.players["P2"]:
                 checkNode.terminal = True
+                checkNode.current_player = Constants.players["Nobody"]
             children.append(checkNode)
         
         if self._possibleBet(current_node):
@@ -85,9 +89,10 @@ class PokerTreeBuilder():
                     children.append(betNode)
 
         if self._possibleCall(current_node): 
-            callNode = TreeNode(current_node.street, Util.fill_bets(current_node.bets), Constants.players["Nobody"], current_node.board, True)
+            callNode = TreeNode(current_node.street, Util.fill_bets(current_node.bets), Constants.players["Chance"], current_node.board, True)
             if current_node.street == Constants.params["max_street"]:
                 callNode.terminal = True
+                callNode.current_player = Constants.players["Nobody"]
             children.append(callNode)
         
         # todo: implement terminal call. 
